@@ -1,0 +1,52 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.6.2 集合的初始化器
+*/
+
+//只需一个简单的步骤就可以实例化并填充可枚举对象。例如：
+using System.Collections.Generic;
+
+List<int> list = new List<int> { 1, 2, 3 };
+Console.WriteLine(list.Display());
+
+#!csharp
+
+//编译器将其翻译为：
+using System.Collections.Generic;
+
+List<int> list = new List<int>();
+list.Add(1);
+list.Add(2);
+list.Add(3);
+Console.WriteLine(list.Display());
+
+#!csharp
+
+/*
+    它要求可枚举对象实现System.Collections.IEnumerable接口，并且有可以调用的带适当数量参数的Add方法。
+*/
+
+//同样我们也能够初始化字典（请参见7.5节）：
+var dict = new Dictionary<int, string>()
+{
+    { 5, "five" },
+    { 10, "ten" }
+};
+Console.WriteLine(dict.Display());
+
+#!csharp
+
+//或者更加简洁地写为：
+var dict = new Dictionary<int, string>()
+{
+    [3] = "three",
+    [10] = "ten"
+};
+Console.WriteLine(dict.Display());
+
+//第二种写法不仅适用于字典而且适用于任何具有索引器的类型。

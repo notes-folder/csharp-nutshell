@@ -1,0 +1,59 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.6.4.2 迭代器和try/catch/finally语句块
+*/
+
+//yield return语句不能出现在带catch子句的try语句块中：
+IEnumerable<string> Foo()
+{
+    try
+    {
+        yield return "One";
+    }     // Illegal
+    catch
+    {
+        //... 
+    }
+}
+
+#!csharp
+
+/*
+    yield return语句也不能出现在catch或者finally语句块中。
+    出现这些限制的原因是编译器必须将迭代器转换为带有MoveNext、Current和Dispose成员的普通类，而转换异常处理语句块会大大增加代码的复杂性。
+*/
+
+//但是可以在只带有finally块的try语句块中使用yield语句：
+IEnumerable<string> Foo()
+{
+    try
+    {
+        yield return "One"; // OK
+    }
+    finally
+    {
+        //...
+    }
+}
+
+#!csharp
+
+/*
+    当枚举器到达序列末尾或被销毁时就可以执行finally块了。
+    如果枚举提前结束，则foreach语句会隐式销毁枚举器，这是消费枚举器的安全且正确的做法。
+    当显式使用枚举器时，一个陷阱是提前结束枚举而不销毁枚举器，从而绕过finally块的执行。
+    我们可以将枚举器的使用显式包裹在using语句中来避免上述错误。
+*/
+string firstElement = null;
+var sequence = Foo();
+using (var enumerator = sequence.GetEnumerator())
+    if (enumerator.MoveNext())
+    {
+        firstElement = enumerator.Current;
+        Console.WriteLine(firstElement);
+    }

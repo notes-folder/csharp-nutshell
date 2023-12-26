@@ -1,0 +1,62 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.6.1 可枚举类型
+    枚举器（Enumerator）是一个只读的且只能在值序列上前移的游标。
+    枚举器实现下面的接口之一：
+        · System.Collections.IEnumerator
+        · System.Collections.Generic.IEnumerator<T>
+    🍦从技术上，任何具有MoveNext方法和Current属性的对象都被当作枚举器。
+    这个宽泛定义是为了在C# 1.0中不经过装箱/拆箱操作就可以支持数值型的可枚举类型，而它在C# 2引入泛型之后就是多余的了。
+*/
+
+#!csharp
+
+/*
+    foreach语句用来在可枚举（enumerable）的对象上执行迭代操作。
+    可枚举的对象指逻辑上的序列，它本身不是游标，但是它可以在对象自身上生成游标，可枚举的对象可以是：
+        · IEnumerable或IEnumerable<T>的实现
+        · 具有名为GetEnumerator的方法并且返回值是一个枚举器（enumerator）对象
+    🍦IEnumerator和IEnumerable定义在System.Collections里。
+    IEnumerator<T>和IEnumerable<T>定义在System.Collections. Generic命名空间中。
+*/
+
+#!csharp
+
+/*
+    可枚举类型的模板如下：
+    class Enumerator   // Typically implements IEnumerator or IEnumerator<T>
+    {
+        public IteratorVariableType Current { get {...} }
+        public bool MoveNext() {...}
+    }
+
+    class Enumerable   // Typically implements IEnumerable or IEnumerable<T>
+    {
+        public Enumerator GetEnumerator() {...}
+    }
+*/
+
+#!csharp
+
+//以下是使用高层次的方式遍历单词bear的每一个字母的方法：
+foreach (char c in "beer")
+{
+    Console.WriteLine(c);
+}
+
+#!csharp
+
+//而下面是使用低层的调用即不用foreach语句遍历单词bear的每一个字母的方法：
+using (var enumerator = "beer".GetEnumerator())
+    while (enumerator.MoveNext())
+    {
+        var element = enumerator.Current;
+        Console.WriteLine(element);
+    }
+
+//如果迭代器实现了IDisposable，则foreach语句也会起到using语句的作用，隐式销毁枚举器对象。

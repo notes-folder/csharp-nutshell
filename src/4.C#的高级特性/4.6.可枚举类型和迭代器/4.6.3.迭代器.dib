@@ -1,0 +1,48 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.6.3 迭代器
+    和foreach语句是枚举器的消费者正好相反，迭代器是枚举器的生产者。
+*/
+
+//本例中，我们使用迭代器来返回斐波那契数列（斐波那契数列表中的每一个数字是前两个数字之和）：
+using System;
+using System.Collections.Generic;
+
+IEnumerable<int> Fibs(int fibCount)
+{
+    for (int i = 0, prevFib = 1, curFib = 1; i < fibCount; i++)
+    {
+        yield return prevFib;
+        int newFib = prevFib + curFib;
+        prevFib = curFib;
+        curFib = newFib;
+    }
+}
+
+foreach (int fib in Fibs(6))
+{
+    Console.Write(fib + "  ");
+}
+
+#!csharp
+
+/*
+    return语句表示“这是该方法的返回值”，而yield return语句则表示“这是当前枚举器产生的下一个元素”。
+    在每条yield语句中，控制都返回给调用者，但是必须同时维护调用者的状态，以便调用者枚举下一个元素的时候，方法能够继续执行。
+    该状态的生命周期是与枚举器绑定的。
+    当调用者枚举结束之后，该状态就可以被释放。
+*/
+
+#!csharp
+
+/*
+    🍦编译器将迭代方法转换为实现了IEnumerable<T>或IEnumerator<T>的私有类。
+    迭代器块中的逻辑被“反转”并分别进入编译器生成的枚举器类的MoveNext方法和Current属性。
+    当调用迭代器方法的时候，所做的仅仅是实例化编译器生成的类，而迭代器代码并没有真正执行。
+    编写的迭代器代码只有当开始枚举结果序列时才开始执行，典型的如foreach语句。
+*/

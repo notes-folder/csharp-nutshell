@@ -1,0 +1,43 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.6.5 组合序列
+    迭代器有高度可组合性。
+*/
+
+//我们可以扩展前面的示例，只输出偶数斐波那契数列：
+using System;
+using System.Collections.Generic;
+
+static IEnumerable<int> Fibs(int fibCount)
+{
+    for (int i = 0, prevFib = 1, curFib = 1; i < fibCount; i++)
+    {
+        yield return prevFib;
+        int newFib = prevFib + curFib;
+        prevFib = curFib;
+        curFib = newFib;
+    }
+}
+
+IEnumerable<int> EvenNumbersOnly(IEnumerable<int> sequence)
+{
+    foreach (int x in sequence)
+    {
+        if ((x % 2) == 0)
+        {
+            yield return x;
+        }
+    }
+}
+
+foreach (int fib in EvenNumbersOnly(Fibs(6)))
+{
+    Console.WriteLine(fib);
+}
+
+//每一个元素都只有到了最后关头，即执行MoveNext()操作时才会进行计算
