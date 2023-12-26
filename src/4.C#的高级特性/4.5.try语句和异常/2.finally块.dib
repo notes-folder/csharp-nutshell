@@ -1,0 +1,66 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.5.2 finally块
+    无论代码是否抛出异常，也无论try程序块是否完全执行，finally程序块总会执行。
+    通常，finally块用于执行清理工作。
+    finally块会在以下情况执行：
+        · 在catch块执行完成后· 使用跳转语句（例如return或goto），离开了try块
+        · try块执行结束唯一能够阻止finally块执行的就是无限循环了，或者应用程序进程突然终止。finally块为程序添加了确定性保证。
+*/
+
+/*
+    在以下的例子中，即使发生了以下的情况，打开的文件也总是能够关闭：
+        · try块正常结束
+        · 因为是空文件而提前返回了EndOfStream
+        · 读取文件时抛出了IOException
+*/
+using System.IO;
+static void ReadFile()
+{
+    StreamReader reader = null;     // In System.IO namespace
+    try
+    {
+        reader = File.OpenText("file.txt");
+        if (reader != null && reader.EndOfStream == false) return;
+        Console.WriteLine(reader.ReadToEnd());
+    }
+    finally
+    {
+        reader?.Dispose();
+    }
+}
+
+//在本例中，我们通过StreamReader的Dispose方法来关闭文件。
+//在finally块中调用Dispose方法是贯穿.NET Framework的标准约定，在C#中也有using语句来提供直接支持。
+
+#!csharp
+
+/*
+    using语句
+    许多类的内部都封装了非托管资源。
+    例如文件句柄、图像句柄、数据库连接等。
+    这些类都实现了System.IDisposable接口，该接口定义了一个名称为Dispose的无参数方法，用于清除这些非托管资源。
+    using语句提供了一种在finally块中调用IDisposable接口对象的Dispose方法的优雅方式。
+*/
+
+//以下语句：
+using (StreamReader reader = File.OpenText("file.txt"))
+{
+    //...
+}
+
+//完全等价于：
+StreamReader reader = File.OpenText("file.txt");
+try
+{
+    //...
+}
+finally
+{
+    ((IDisposable)reader)?.Dispose();
+}

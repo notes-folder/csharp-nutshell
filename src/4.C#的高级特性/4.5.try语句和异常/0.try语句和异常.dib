@@ -1,0 +1,82 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.5 try语句和异常
+    try语句是为了处理错误或者执行清理代码而定义的语句块。
+    try语句块后面必须跟catch语句块或者finally语句块，或者两者都有。
+    当try块执行并发生错误时，则执行catch语句块。
+    当try块结束时（或者如果当前是catch块的话则当catch块结束时），不管有没有发生错误，都会执行finally块来执行清理代码。
+*/
+
+/*
+    catch块可以访问Exception对象，该对象包含错误信息。
+    我们可以在catch块中处理错误或者再次抛出异常。
+    例如，记录日志并重新抛出异常，或者抛出一个更高层次的异常。
+*/
+
+/*
+    finally块为程序的执行提供了确定性：CLR会尽最大努力保证其执行。
+    它通常用于执行清理任务，例如关闭网络连接等。
+*/
+
+//try语句的使用示例如下：
+try
+{
+    // exception may get thrown within execution of this block
+}
+catch (SystemException ex)
+{
+    Console.WriteLine(ex.Message); // handle exception of type SystemException
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);  // handle exception of type Exception
+}
+finally
+{
+    // cleanup code
+}
+
+#!csharp
+
+//考虑如下的程序：
+int Calc(int x) => 10 / x;
+int y = Calc(0);
+Console.WriteLine(y);
+
+#!csharp
+
+//由于x是0，因此运行时将抛出DivideByZeroException，程序终止。
+//我们可以通过catch捕获异常来防止程序提前终止：
+int Calc(int x) => 10 / x;
+try
+{
+    int y = Calc(0);
+    Console.WriteLine(y);
+}
+catch (DivideByZeroException ex)
+{
+    Console.WriteLine(ex.Message);
+}
+Console.WriteLine("program completed");
+
+#!csharp
+
+/*
+    上述程序是异常处理的简单示例。
+    在实际工作中，更好的方法是在调用Calc之前显式检查除数是否为0。
+    我们更提倡提前进行检查以避免错误，而不是依赖try/catch块。
+    这是因为异常处理代价比较昂贵，通常需要超过几百个时钟周期。
+*/
+
+/*
+    当抛出异常的时候，公共语言运行时（CLR）会执行如下测试：
+    当前执行点是否在可以捕获该异常的try语句里执行？
+        · 如果是，则执行点转移到可以处理相应异常的catch块。如果catch块成功地运行结束，则执行转到try之后的语句（如果有finally块，则finally块优先执行）。
+        · 如果不是，则执行会跳转到调用函数，并重复上述测试（在跳转之前，如果当前语句所在的语句块含有关联的finally语句块，则会首先执行finally语句块中的语句）。
+            如果没有任何函数处理该异常，则用户将看到一个提示框[插图]，且程序将终止执行。
+*/

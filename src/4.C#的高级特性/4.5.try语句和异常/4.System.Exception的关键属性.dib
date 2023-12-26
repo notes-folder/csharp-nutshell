@@ -1,0 +1,14 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.5.4 System.Exception的关键属性
+    System.Exception类的最重要的属性有下面几个：
+        · StackTrace：表示一个异常从起源到catch块的所有调用方法的字符串。
+        · Message：描述异常的字符串。
+        · InnerException：导致外部异常的内部异常（如果有的话）。而内部异常本身也可以有另外一个InnerException。
+    🍦所有的C#异常都是运行时异常，没有和Java对等的编译时检查异常。
+*/

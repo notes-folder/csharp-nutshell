@@ -1,0 +1,81 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.5.3.2 重新抛出异常
+*/
+
+//可以捕获异常后再重新抛出，例如：
+try
+{
+    //...
+}
+catch (Exception ex)
+{
+    // Log error
+    //...
+    throw;            // Rethrow same exception
+}
+
+#!csharp
+
+/*
+    🍦如果将throw替换为throw ex，那么这个例子仍然有效。
+    但是新产生异常的StackTrace属性不再反映原始的错误。
+*/
+
+//重新抛出异常可用于需要记录错误但是并不将异常隐藏的情形，也可以在异常超出处理范围的情况下放弃对异常进行处理。
+using System.Net;        // (See Chapter 16)
+
+string s = null;
+using (WebClient wc = new WebClient())
+    try
+    {
+        s = wc.DownloadString("http://www.albahari.com/nutshell/");
+    }
+    catch (WebException ex)
+    {
+        if (ex.Status == WebExceptionStatus.Timeout)
+            Console.WriteLine("Timeout");
+        else
+            throw;      // Can't handle other sorts of WebException, so rethrow
+    }
+
+#!csharp
+
+/*
+    从C# 6.0开始，上述例子可以使用异常筛选器简写成：
+    catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
+    {
+        Console.WriteLine ("Timeout");
+    }
+*/
+
+#!csharp
+
+//另一种常见情形是重新抛出某个明确类型的异常，例如：
+using System.Xml;
+
+try
+{
+    //... // Parse a DateTime from XML element data
+}
+catch (FormatException ex)
+{
+    throw new XmlException("Invalid DateTime", ex);
+}
+
+#!csharp
+
+/*
+    请注意，当构建XmlException时，我们将原始的异常ex作为第二个参数。
+    这个参数将作为新异常的InnerException属性而辅助诊断。
+    几乎所有类型的异常都提供了类似的构造器。
+*/
+
+/*
+    在跨越信任边界时，常用做法是重新抛出一个不那么明确的异常，以防止技术信息泄露而给黑客可乘之机。
+*/

@@ -1,0 +1,87 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.5.1 catch子句
+    catch子句定义捕获哪些类型的异常，这些异常应当是System.Exception或者System.Exception的子类。
+    捕获System.Exception表示捕获所有可能的异常，通常用于如下场景：
+        · 不论何种特定类型的异常，程序都可以恢复
+        ·（在记录日志之后）重新抛出该异常
+        · 程序终止前的最后一个错误处理函数
+*/
+
+/*
+    比上述更常见的做法则是捕获特定类型的异常（例如OutOfMemoryException），以避免出现设计中遗漏特定的情景的情况。
+*/
+
+//可以使用多个catch子句处理多种异常类型（同样，下面的例子也可以进行显式参数检查而不仅仅是进行异常处理）：
+class Test
+{
+    static void Main(string[] args)
+    {
+        try
+        {
+            byte b = byte.Parse(args[0]);
+            Console.WriteLine(b);
+        }
+        catch (IndexOutOfRangeException ex)
+        {
+            Console.WriteLine("Please provide at least one argument");
+        }
+        catch (FormatException ex)
+        {
+            Console.WriteLine("That's not a number! ");
+        }
+        catch (OverflowException ex)
+        {
+            Console.WriteLine("You've given me more than a byte! ");
+        }
+    }
+}
+
+#!csharp
+
+/*
+    一个catch子句只针对一种给定的异常。
+    如果想通过捕获更普遍的异常（如System.Exception）来构建安全网，则必须把处理特定异常的逻辑放在前面。
+*/
+
+/*
+    如果不需要访问异常的属性，可以捕获异常但不指定变量：
+    catch (OverflowException)    // no variable
+    {
+        ...
+    }
+*/
+
+/*
+    甚至，可以同时忽略异常的类型和变量（捕获所有的异常）：
+    catch { ... }
+*/
+
+#!csharp
+
+/*
+    异常筛选器（C# 6）
+    从C# 6.0开始，可以在catch子句中添加when子句来指定异常筛选器（exception filter）：
+    catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
+    {
+        ...
+    }
+
+    如果本例中抛出了WebException，则when关键字后指定的布尔表达式就会执行。
+    如果执行结果为false则catch块会被忽略，继而评估后续的catch块。
+*/
+
+/*
+    有了异常筛选器之后，我们就可以重复捕获同类型的异常了：
+    catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
+    { ... }
+    catch (WebException ex) when (ex.Status == WebExceptionStatus.SendFailure)
+    { ... }
+
+    when子句中的布尔表达式可以包含副作用，例如调用一个方法记录诊断所需的异常的日志。
+*/
