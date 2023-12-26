@@ -1,0 +1,30 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.3.1 显式指定Lambda参数的类型
+    编译器通常可以根据上下文推断出Lambda表达式的类型，但是当无法推断的时候则必须显式指定每一个参数的类型。
+*/
+
+//请考虑如下方法：
+void Foo<T>  (T x)           {}
+void Bar<T>  (Action<T>  a) {}
+
+#!csharp
+
+//以下代码无法通过编译，因为编译器无法推断x的类型：
+Bar (x => Foo (x));      // What type is x?
+
+#!csharp
+
+//我们可以通过显式指定x的类型来修正这个问题：
+Bar ((int x) => Foo (x));
+
+#!csharp
+
+//这个简单的例子还可以用其他两种方式修正：
+Bar<int>  (x =>  Foo (x));     // Specify type parameter for Bar
+Bar<int>  (Foo);              // As above, but with method group

@@ -1,0 +1,12 @@
+{
+    "editor.formatOnSave": true,
+    "csharp.format.enable": true,
+    "razor.format.enable": true,
+    "omnisharp.organizeImportsOnFormat": true,
+    "[csharp]": {
+        "editor.formatOnSave": true
+    },
+    "polyglot-notebook.defaultNotebookExtension": ".dib",
+    "polyglot-notebook.defaultNotebookLanguage": "csharp",
+    "polyglot-notebook.suppressPromptToSaveDefaults": true
+}

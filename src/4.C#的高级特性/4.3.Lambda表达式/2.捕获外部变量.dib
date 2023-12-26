@@ -1,0 +1,131 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.3.2 捕获外部变量
+    Lambda表达式可以引用方法内定义的局部变量和方法的参数（外部变量，outer variables）。
+*/
+
+int factor = 2;
+Func<int, int> multiplier = n => n * factor;
+Console.WriteLine(multiplier(3));             // 6
+
+#!csharp
+
+/*
+    Lambda表达式所引用的外部变量称为捕获变量（captured variable）。
+    捕获变量的表达式称为闭包（closure）。
+    变量也可以被匿名方法和局部方法捕获。
+    捕获变量的规则都是一样的。
+*/
+
+//捕获的变量会在真正调用委托时赋值，而不是在捕获时赋值：
+int factor = 2;
+Func<int, int> multiplier = n => n * factor;
+factor = 10;
+Console.WriteLine(multiplier(3));             // 30
+
+#!csharp
+
+//Lambda表达式也可以更新捕获的变量的值：
+int seed = 0;
+Func<int> natural = () => seed++;
+Console.WriteLine(natural());             // 0
+Console.WriteLine(natural());             // 1
+Console.WriteLine(seed);                   // 2
+
+#!csharp
+
+/* 
+    捕获变量的生命周期延伸到了和委托的生命周期一致。
+*/
+
+//在以下例子中，局部变量seed本应该在Natural执行完毕后从作用域中消失，但由于seed被捕获，因此其生命周期已经和捕获它的委托natural一致了：
+Func<int> Natural()
+{
+    int seed = 0;
+    return () => seed++;       // Returns a closure
+}
+
+Func<int> natural = Natural();
+Console.WriteLine(natural());       // 0
+Console.WriteLine(natural());       // 1
+
+#!csharp
+
+/* 
+    在Lambda表达式内实例化的局部变量在每一次调用委托实例期间都是唯一的。
+*/
+
+//如果我们把上述例子改成在Lambda表达式内实例化seed，则程序的结果（当然这个结果不是我们期望的）将与之前不同：
+Func<int>  Natural()
+{
+    return() => { int seed = 0; return seed++; };
+}
+
+Func<int>  natural = Natural();
+Console.WriteLine (natural());             // 0
+Console.WriteLine (natural());             // 0
+
+#!csharp
+
+/*
+    内部捕获变量是通过将变量“提升”为私有类的字段的方式实现的。
+    当调用方法时，实例化该私有类，并将其生命周期绑定在委托实例上。
+*/
+
+//当捕获for循环的迭代变量时，C#会认为该变量是在循环体外定义的。
+//而这意味着同一次变量在每一次迭代都被捕获了，因此程序输出333而非012：
+Action[] actions = new Action[3];
+
+for (int i = 0; i < 3; i++)
+    actions [i] = () => Console.Write (i);
+
+foreach (Action a in actions) a();      // 333
+
+#!csharp
+
+/* 
+    每一个闭包（加粗的部分）都捕获了相同的变量i（如果变量i在循环中保持不变，则非常有效；我们甚至可以在循环体中显式更改i的值），
+    而这个后果是每一个委托只在调用的时候才看到i的值，而这时i已经是3了。
+*/
+
+//将for展开更便于理解：
+Action[] actions = new Action[3];
+int i = 0;
+actions[0] = () => Console.Write (i);
+i = 1;
+actions[1] = () => Console.Write (i);
+i = 2;
+actions[2] = () => Console.Write (i);
+i = 3;
+foreach (Action a in actions) a();     // 333
+
+#!csharp
+
+//如果我们真的希望输出012，那么需要将循环变量指定到循环内部的局部变量中：
+Action[] actions = new Action[3];
+for (int i = 0; i < 3; i++)
+{
+    int loopScopedi = i;
+    actions [i] = () => Console.Write (loopScopedi);
+}
+foreach (Action a in actions) a();      // 012
+
+//由于loopScopedi对于每一次迭代都是新创建的，因此每一个闭包都将捕获不同的变量。
+
+#!csharp
+
+//在C# 5.0之前，foreach循环以同样的方式工作：
+Action[] actions = new Action[3];
+int i = 0;
+
+foreach (char c in "abc")
+actions [i++] = () => Console.Write (c);
+
+foreach (Action a in actions) a();    // ccc in C# 4.0
+
+//这会引起很大的困惑：与for不同，foreach循环中的迭代变量是不可变的，所以人们可以将它作为循环体的局部变量。C# 5.0修复了这个问题，上面的例子会输出abc。
