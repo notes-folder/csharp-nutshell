@@ -5,6 +5,66 @@
 #!csharp
 
 /*
+    4.6.4 迭代器语义
+    迭代器是包含一个或者多个yield语句的方法、属性或者索引器。
+    迭代器必须返回以下四个接口之一（否则编译器会产生相应错误）：
+        // Enumerable interfaces
+        System.Collections.IEnumerable
+        System.Collections.Generic.IEnumerable<T>
+
+        // Enumerator interfaces
+        System.Collections.IEnumerator
+        System.Collections.Generic.IEnumerator<T>
+*/
+
+#!csharp
+
+/*
+    迭代器具有不同的语义，取决于迭代器返回的是可枚举接口还是枚举器接口，我们将在第7章说明。
+*/
+
+//允许使用多个yield statements，例如：
+IEnumerable<string> Foo()
+{
+    yield return "One";
+    yield return "Two";
+    yield return "Three";
+}
+
+foreach (string s in Foo())
+{
+    Console.WriteLine(s);           // Prints "One", "Two", "Three"
+}
+
+#!csharp
+
+/*
+    4.6.4.1 yield break语句
+    yield break语句表明迭代器块不再返回更多的元素而是提前退出。
+*/
+
+//我们可以将Foo修改为下面的示例：
+IEnumerable<string> Foo(bool breakEarly)
+{
+    yield return "One";
+    yield return "Two";
+
+    if (breakEarly)
+        yield break;
+
+    yield return "Three";
+}
+
+foreach (string s in Foo(true))
+{
+    Console.WriteLine(s);           // Prints "One", "Two"
+}
+
+//🍦迭代器语句块中使用return语句是非法的，应当使用yield break。
+
+#!csharp
+
+/*
     4.6.4.2 迭代器和try/catch/finally语句块
 */
 
