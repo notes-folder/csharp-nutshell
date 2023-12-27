@@ -5,6 +5,48 @@
 #!csharp
 
 /*
+    4.5.3 抛出异常
+    运行时或用户代码都可以抛出异常。
+*/
+
+//以下例子中，Display方法会抛出System.ArgumentNullException：
+void Display(string name)
+{
+    if (name == null)
+    {
+        throw new ArgumentNullException(nameof(name));
+    }
+
+    Console.WriteLine(name);
+}
+
+try
+{
+    Display(null);
+}
+catch (ArgumentNullException ex)
+{
+    Console.WriteLine(ex.Message);
+}
+
+#!csharp
+
+/*
+    4.5.3.1 throw表达式（C# 7）
+*/
+
+//在C# 7之前，throw永远是一个语句，而现在它也可以以表达式的形式出现在表达式函数中：
+public string Foo() => throw new NotImplementedException();
+
+//throw表达式也可以出现在三元条件表达式中：
+string ProperCase(string value) =>
+  value == null ? throw new ArgumentException("value") :
+  value == "" ? "" :
+  char.ToUpper(value[0]) + value.Substring(1);
+
+#!csharp
+
+/*
     4.5.3.2 重新抛出异常
 */
 
