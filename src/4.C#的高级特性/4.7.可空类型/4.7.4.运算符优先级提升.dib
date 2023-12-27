@@ -1,0 +1,112 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7.4 运算符优先级提升
+    Nullable<T>结构并没有定义诸如<、> 、==的运算符。
+*/
+
+//尽管如此，以下代码仍然能够正常编译和执行：
+int? x = 5;
+int? y = 10;
+bool b = x < y;       // true
+
+/*
+    这是因为编译器会从实际值类型借用或者“提升”小于运算符。
+    在语义上，它会将前面的比较表达式转换为如下的语句：
+    bool b = (x.HasValue && y.HasValue) ? (x.Value < y.Value) : false;
+*/
+
+#!csharp
+
+/*
+    运算符提升意味着可以隐式使用T的运算符来处理T?。
+    可以专门针对T？进行运算符重载来实现特殊的空值行为。
+    但是在大多数情况下，最好通过编译器来自动地应用系统的空值逻辑。
+    以下是一些示例：
+*/
+
+int? x = 5;
+int? y = null;
+
+// Equality operator examples
+Console.WriteLine(x == y);     // False
+Console.WriteLine(x == null); // False
+Console.WriteLine(x == 5);     // True
+Console.WriteLine(y == null); // True
+Console.WriteLine(y == 5);     // False
+Console.WriteLine(y != 5);     // True
+
+// Relational operator examples
+Console.WriteLine(x < 6);      // True
+Console.WriteLine(y < 6);      // False
+Console.WriteLine(y > 6);      // False
+
+// All other operator examples
+Console.WriteLine(x + 5);      // 10
+Console.WriteLine(x + y);      // null (prints empty line)
+
+#!csharp
+
+/*
+    4.7.4.1 相等运算符（==和！=）
+    提升后的相等运算符可以像引用类型那样处理空值。
+    这意味着两个null值是相等的。
+    而且：
+        · 如果只有一个操作数为null那么两个操作数不相等；
+        · 如果两个操作数都不能为null则比较它们的Value。
+*/
+
+Console.WriteLine(null == null);   // True
+Console.WriteLine((bool?)null == (bool?)null);   // True
+
+#!csharp
+
+/*
+    4.7.4.2 关系运算符
+    对于关系运算符而言比较null操作数是没有意义的。
+    因此比较空值和另外一个空值或非空值的结果都是false。
+*/
+
+int? x = 5;
+int? y = null;
+bool b = x < y;     // Translation:
+Console.WriteLine(b);
+
+#!csharp
+
+bool b = (x.HasValue && y.HasValue) ? (x.Value < y.Value) : false;
+Console.WriteLine(b);
+// b is false (assuming x is 5 and y is null)
+
+#!csharp
+
+/*
+    4.7.4.3 其他运算符（+、-、＊、/、%、&、|、^、<<、> >、+、++、--、！和～）
+    当任意一个操作数为null时，则这些运算符都会返回null。
+*/
+
+//SQL用户是非常熟悉这种模式的：
+int? x = 5;
+int? y = null;
+int? c = x + y;    // Translation:
+Console.WriteLine(c.HasValue ? c.Value.ToString() : "null");
+
+#!csharp
+
+int? c = (x.HasValue && y.HasValue) ? (int?)(x.Value + y.Value) : null;
+Console.WriteLine(c.HasValue ? c.Value.ToString() : "null");
+// c is null (assuming x is 5 and y is null)
+
+#!csharp
+
+/*
+    4.7.4.4 混合使用可空和非空类型的操作数
+*/
+//混合使用可空或不可空类型是可行的，这是因为T与T？之间存在着隐式转换机制：
+int? a = null;
+int b = 2;
+int? c = a + b;    // c is null - equivalent to a + (int? )b

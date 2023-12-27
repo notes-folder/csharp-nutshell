@@ -1,0 +1,19 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7.2 隐式和显式的可空对象转换
+    从T到T？的转换是隐式的而反之则是显式的。
+*/
+
+//例如：
+int? x = 5;          // implicit
+int y = (int)x;      // explicit
+
+/*
+    显式强制转换与直接调用可空对象的Value属性实质上是等价的。
+    因此，当HasValue为false的时候将抛出InvalidOperationException。
+*/

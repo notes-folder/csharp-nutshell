@@ -1,0 +1,35 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7.6 可空类型和null运算符
+    可空类型与？？运算符相辅相成（请参见2.10.1节）。
+*/
+
+int? x = null;
+int y = x ?? 5;          // y is 5
+Console.WriteLine(y);
+
+int? a = null, b = 1, c = 2;
+Console.WriteLine(a ?? b ?? c);  // 1 (first non-null value)
+
+#!csharp
+
+/*
+    在可空类型上使用？？运算符相当于调用GetValueOrDefault方法并提供一个显式的默认值，但变量如果不是null的话则不会使用默认值。
+    可空类型同样适用于null条件运算符（请参见2.10.2节）。
+*/
+
+//在下面的例子中，长度值最终为null：
+System.Text.StringBuilder sb = null;
+int? length = sb?.ToString().Length;
+Console.WriteLine(length);     // null
+
+#!csharp
+
+//还可以结合使用null合并运算符和null条件运算符来最终得到0而不是null：
+int length = sb?.ToString().Length ?? 0;  // Evaluates to 0 if sb is null
+Console.WriteLine(length);     // 0

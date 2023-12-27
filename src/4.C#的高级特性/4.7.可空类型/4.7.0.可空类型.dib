@@ -1,0 +1,23 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7 可空类型
+    引用类型可以使用空引用表示一个不存在的值，然而值类型不能直接表示为null。
+*/
+
+string s = null;         // OK, Reference Type
+int i = null;            // Compile Error, Value Type cannot be null
+
+#!csharp
+
+/*
+    若要在值类型中表示null，则必须是用特殊的结构即可空类型（Nullable Type）。
+*/
+
+//可空类型是由数据类型后加一个“? ”表示的：
+int? i = null;                        // OK, Nullable Type
+Console.WriteLine(i == null);        // True

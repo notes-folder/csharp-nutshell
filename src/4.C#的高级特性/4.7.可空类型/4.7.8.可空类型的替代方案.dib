@@ -1,0 +1,46 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7.8 可空类型的替代方案
+    在可空类型成为C#语言的一部分之前（例如C# 2.0以前的版本），也有许多处理可空值类型的方式。
+    由于历史原因，这些方式现在仍然存在于.NET Framework中。
+    其中之一就是将一个特定的非空值指定为“空值”。
+    字符串和数组类中就有这样的方式。
+*/
+
+//例如String.IndexOf在找不到字符的时候会返回一个特殊的“魔法值”-1。
+int i = "Pink".IndexOf('b');
+Console.WriteLine(i);           //    -1
+
+#!csharp
+
+/*
+    然而，Array.IndexOf只有在索引是基于0的时候才会返回-1。
+    最常见的规则是IndexOf返回比数据下限小1的值。
+    在下一个例子中，IndexOf在没有找到某个元素的时候返回0。
+*/
+
+// Create an array whose lower bound is 1 instead of 0:
+Array a = Array.CreateInstance(typeof(string), new int[] { 2 }, new int[] { 1 });
+a.SetValue("a", 1);
+a.SetValue("b", 2);
+Console.WriteLine(Array.IndexOf(a, "c"));  // 0
+
+#!csharp
+
+/*
+    指定“魔法值”会造成各种问题，以下列举了一些原因：
+        · 每一个值类型有不同的空值的表示方式。
+            而与之相反的，使用可空类型可以用一种通用模式处理任意的值类型。
+        · 可能无法找到一个合理的值。
+            例如上述的例子中，我们无法总是使用-1。
+            更早的例子中表示一个未知账号的余额的方式也有相同的问题。
+        · 如果忘记对魔法值进行测试可能导致长期忽略不正确的数据，直至在后续运行中出现一个出乎意料的结果。
+            而如果忘记测试HasValue为null的情况，则会马上抛出InvalidOperationException。
+        · 没有在类型层面上处理值可以为null的情况。
+            类型可以传达程序的意图，并允许编译器检查其正确性，从而和编译器的规则保持一致。
+*/

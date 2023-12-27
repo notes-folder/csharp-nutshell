@@ -1,0 +1,42 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7.1 Nullable<T>结构体
+    T？会翻译为System.Nullable<T>，它是一个轻量级的不可变的结构体。
+    它只有两个字段，分别代表Value和HasValue。
+*/
+
+/*
+    System.Nullable<T>实质是很简单的：
+    public struct Nullable<T> where T : struct
+    {
+        public T Value { get; }
+        public bool HasValue { get; }
+        public T GetValueOrDefault();
+        public T GetValueOrDefault(T defaultValue);
+    }
+*/
+
+#!csharp
+
+//代码：
+int? i = null;
+Console.WriteLine(i == null);                 // True
+
+#!csharp
+
+//将翻译为：
+Nullable<int> i = new Nullable<int>();
+Console.WriteLine(!i.HasValue);             // True
+
+#!csharp
+
+/*
+    当HasValue为false时，试图获得Value会抛出InvalidOperationException异常。
+    当HasValue为true时，GetValueOrDefault()会返回Value，否则返回new T()或者一个特定的自定义默认值。
+    T？的默认值为null。
+*/

@@ -1,0 +1,25 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7.5 在bool？上使用&和|运算符
+    如果操作数的类型为bool?，那么&和|运算符会将null作为一个未知值（Unknown value）看待。
+    则null | true应当返回true，因为：
+        · 如果未知值为假的，那么结果为真；
+        · 如果未知值是真的，那么结果为真。
+    类似的，null & false的结果为false。
+*/
+
+//这个行为和SQL非常相似，以下的例子说明了一些其他的组合用法：
+bool? n = null;
+bool? f = false;
+bool? t = true;
+Console.WriteLine(n | n);     // (null)
+Console.WriteLine(n | f);     // (null)
+Console.WriteLine(n | t);     // True
+Console.WriteLine(n & n);     // (null)
+Console.WriteLine(n & f);     // False
+Console.WriteLine(n & t);     // (null)

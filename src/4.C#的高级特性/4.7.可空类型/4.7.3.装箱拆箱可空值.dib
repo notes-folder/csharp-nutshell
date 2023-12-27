@@ -1,0 +1,16 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7.3 装箱拆箱可空值
+    如果T？是装箱的，那么堆中的装箱值包含的是T，而不是T?。
+    这种优化方式是可行的，因为装箱值已经是一个可以赋值为null的引用类型了。
+*/
+
+//C#允许通过as运算符对一个可空类型进行拆箱。如果强制转换出错，那么结果为null：
+object o = "string";
+int? x = o as int?;
+Console.WriteLine(x.HasValue);    // False

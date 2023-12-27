@@ -1,0 +1,45 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.7.7 可空类型的应用场景
+    可空类型常用来表示未知的值，尤其是在数据库编程中最为常见。
+    数据编程通常需要将类映射到具有可空列的数据表中。
+    如果这些列是字符串类型（例如Customer表的EmailAddress列），这样就没有任何问题，因为字符串是一种CLR的引用类型因而可以为null；
+    而有些SQL列的类型是值类型，因而使用可空类型可以将这些列映射到CLR。
+*/
+
+// Maps to a Customer table in a database
+public class Customer
+{
+    public decimal? AccountBalance;
+}
+
+#!csharp
+
+/* 
+    可空类型还可以用于表示后备字段，即所谓的环境属性（ambient property）。
+    如果环境属性的值为null，那么则返回父类的值。
+*/
+
+public interface Color;
+
+public interface Grid
+{
+    Color Color { get; }
+}
+
+public class Row
+{
+    Grid parent;
+    Color? color;
+
+    public Color Color
+    {
+        get { return color ?? parent.Color; }
+        set { color = value == parent.Color ? (Color?)null : value; }
+    }
+}
