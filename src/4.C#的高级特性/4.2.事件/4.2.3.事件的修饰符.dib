@@ -1,0 +1,16 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.2.3 事件的修饰符
+    和方法类似，事件可以是虚的（virtual）、可以重写（overridden）、可以是抽象的（abstract）或者密封的（sealed），当然也可以是静态的。
+*/
+
+public class Foo
+{
+    public static event EventHandler<EventArgs> StaticEvent;
+    public virtual event EventHandler<EventArgs> VirtualEvent;
+}

@@ -1,0 +1,60 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.2.2 事件访问器
+    事件访问器是对事件的+=和-=功能的实现。
+    默认情况下，访问器由编译器隐式实现。
+*/
+
+public event EventHandler PriceChanged;
+
+#!csharp
+
+/*
+    编译器将其转化为：
+        · 一个私有的委托字段。
+        · 一对公有的事件访问器函数（add_PriceChanged和remove_PriceChanged），它们将+=和-=操作转向了私有的委托字段。
+*/
+
+// 我们也可以显式定义事件访问器来替代这个过程。以下是PriceChanged事件的手动实现：
+private EventHandler priceChanged;          // Declare a private delegate
+
+public event EventHandler PriceChanged
+{
+    add { priceChanged += value; }
+    remove { priceChanged -= value; }
+}
+
+#!csharp
+
+/*
+    本例从功能上和C#的默认访问器实现是等价的
+    （但是C#还使用了无锁的比较并交换算法，保证了在更新委托时的线程安全性，请参见http://albahari.com/threading）。
+    有了自定义事件访问器，C#就不会生成默认的字段和访问器逻辑。
+    显式定义事件访问器，可以在委托的存储和访问上进行更复杂的操作。
+    这主要有三种情形：
+        · 当前事件访问器仅仅是广播事件的类的中继器。
+        · 当类定义了大量的事件，而大部分事件有很少的订阅者，例如Windows控件。
+            在这种情况下，最好在一个字典中存储订阅者的委托实例。
+            这是因为字典比大量的空委托字段的引用的存储开销更少。
+        · 当显式实现声明事件的接口时。
+*/
+
+// 以下的例子展示了第三种情形：
+public interface IFoo { event EventHandler Ev; }
+
+class Foo : IFoo
+{
+    private EventHandler ev;
+    event EventHandler IFoo.Ev
+    {
+        add { ev += value; }
+        remove { ev -= value; }
+    }
+}
+
+// 🍦 事件的add和remove部分会分别编译为add_XXX和remove_XXX方法。

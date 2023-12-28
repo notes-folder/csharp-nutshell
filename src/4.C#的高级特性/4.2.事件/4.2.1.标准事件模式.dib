@@ -1,0 +1,136 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.2.1 标准事件模式
+    .NET Framework为事件编程定义了一个标准模式，它的目的就是保持框架和用户代码的一致性。
+    标准事件模式的核心是System.EventArgs类，一个预定义的没有成员（但是有一个静态的Empty属性）的类。
+    EventArgs是为事件传递信息的基类。
+*/
+
+//在Stock示例中，我们可以继承EventArgs以便在PriceChanged事件触发时传递新的和旧的Price值：
+public class PriceChangedEventArgs : System.EventArgs
+{
+    public readonly decimal LastPrice;
+    public readonly decimal NewPrice;
+
+    public PriceChangedEventArgs(decimal lastPrice, decimal newPrice)
+    {
+        LastPrice = lastPrice;
+        NewPrice = newPrice;
+    }
+}
+
+#!csharp
+
+/*
+    考虑到复用性，EventArgs子类应当根据它包含的信息来命名（而非根据使用它的事件命名）。
+    它一般将数据以属性或只读字段的方式暴露给外界。
+    EventArgs子类就位后，下一步就是选择或者定义事件的委托了。
+    这一步需要遵循三条规则：
+        · 委托必须以void作为返回值。
+        · 委托必须接受两个参数，第一个参数是object类型，第二个参数则是EventArgs的子类。
+            第一个参数表明了事件的广播者，第二个参数则包含了需要传递的额外信息。
+        · 委托的名称必须以EventHandler结尾。
+*/
+
+// 框架定义了一个名为System.EventHandler<>的泛型委托，该委托满足以上提到的三个条件：
+public delegate void EventHandler<TEventArgs>(object source, TEventArgs e) where TEventArgs : EventArgs;
+
+// 🍦 在泛型出现之前（C# 2.0之前），我们只能以如下的方式书写自定义委托：
+public delegate void PriceChangedHandler(object sender, PriceChangedEventArgs e);
+
+// 出于历史原因，框架中的大部分事件使用的委托是这样定义的。
+
+#!csharp
+
+// 接下来就是定义选定委托类型的事件了。
+// 这里使用泛型的EventHandler委托：
+public class Stock
+{
+    public event EventHandler<PriceChangedEventArgs> PriceChanged;
+}
+
+#!csharp
+
+// 最后，该模式需要编写一个protected的虚方法来触发事件。
+// 方法名必须和事件名称一致，以On作为前缀，并接收唯一的EventArgs参数：
+public class Stock
+{
+
+    public event EventHandler<PriceChangedEventArgs> PriceChanged;
+
+    protected virtual void OnPriceChanged(PriceChangedEventArgs e)
+    {
+        if (PriceChanged != null)
+        {
+            PriceChanged(this, e);
+        }
+    }
+}
+
+// 🍦 在多线程情形下（见第14章），为了保证线程安全，在测试和调用委托之前，需要将它保存在一个临时变量中：
+// var temp = PriceChanged;
+// if (temp ! = null) temp (this, e);
+
+// 我们可以使用C# 6的null条件运算符来避免临时变量的声明：
+// PriceChanged? .Invoke (this, e);
+
+// 这种方式既线程安全又书写简明，是现阶段最好的事件触发方式了。
+
+#!csharp
+
+// 这样就提供了一个子类可以调用或重写事件的关键点（假如不是密封类的话）。以下是完整的例子：
+using System;
+
+public class PriceChangedEventArgs : EventArgs
+{
+    public readonly decimal LastPrice;
+    public readonly decimal NewPrice;
+    public PriceChangedEventArgs(decimal lastPrice, decimal newPrice)
+    {
+        LastPrice = lastPrice; NewPrice = newPrice;
+    }
+}
+
+public class Stock
+{
+    string symbol;
+    decimal price;
+
+    public Stock(string symbol) { this.symbol = symbol; }
+
+    public event EventHandler<PriceChangedEventArgs> PriceChanged;
+
+    protected virtual void OnPriceChanged(PriceChangedEventArgs e)
+    {
+        PriceChanged?.Invoke(this, e);
+    }
+
+    public decimal Price
+    {
+        get { return price; }
+        set
+        {
+            if (price == value) return;
+            decimal oldPrice = price;
+            price = value;
+            OnPriceChanged(new PriceChangedEventArgs(oldPrice, price));
+        }
+    }
+}
+
+void stock_PriceChanged(object sender, PriceChangedEventArgs e)
+{
+    if ((e.NewPrice - e.LastPrice) / e.LastPrice > 0.1M)
+        Console.WriteLine("Alert, 10% stock price increase! ");
+}
+
+Stock stock = new Stock("THPW");
+stock.Price = 27.10M;
+// Register with the PriceChanged event
+stock.PriceChanged += stock_PriceChanged;
+stock.Price = 31.59M;

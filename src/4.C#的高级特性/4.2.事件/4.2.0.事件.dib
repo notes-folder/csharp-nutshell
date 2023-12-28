@@ -1,0 +1,100 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.2 事件
+    当使用委托时，一般会出现两种角色：广播者（broadcaster）和订阅者（subscriber）。
+    广播者是包含委托字段的类型，它通过调用委托决定何时进行广播。
+    而订阅者是方法的目标接收者。订阅者通过在广播者的委托上调用+=和-=来决定何时开始监听而何时监听结束。
+    订阅者不知道也不会干涉其他的订阅者。
+    而事件就是正式定义这一模式的语言功能。
+    事件是一种使用有限的委托功能实现广播者/订阅者模型的结构。
+    使用事件的主要目的在于保证订阅者之间不互相影响。
+*/
+
+// 声明事件最简单的方法是在委托成员的前面加上event关键字：
+// Delegate definition
+public delegate void PriceChangedHandler(decimal oldPrice, decimal newPrice);
+public class Broadcaster
+{
+    // Event declaration
+    public event PriceChangedHandler PriceChanged;
+}
+
+/*
+    Broadcaster类型中的代码对PriceChanged有完全的访问权限，并可以将其视为委托。
+    而Broadcaster类型之外的代码则仅可以在PriceChanged事件上执行+=和-=运算。
+*/
+
+#!csharp
+
+/*
+    事件的工作机制是怎样的
+*/
+
+// 当声明如下的委托时，在内部发生了三件事情：
+public class Broadcaster
+{
+    public event PriceChangedHandler PriceChanged;
+}
+
+// 首先，编译器将事件的声明翻译为如下的形式：
+PriceChangedHandler priceChanged;    // private delegate
+public event PriceChangedHandler PriceChanged
+{
+    add { priceChanged += value; }
+    remove { priceChanged -= value; }
+}
+
+
+/*
+    add和remove关键字明确了事件的访问器，就像属性的访问器那样。
+    而后，编译器在Broadcaster类里面找到除调用+=和-=之外的priceChanged引用点，并将它们重定向到内部的priceChanged委托字段。
+    最后，编译器对事件上的+=和-=运算符操作相应地调用事件的add或remove访问器。
+    有意思的是当应用于事件时，+=和-=的行为是唯一的，而不像其他的情况下是+和-运算符与赋值运算符的简写。
+*/
+
+#!csharp
+
+// 观察下面的例子，在Stock类中，每当Stock的Price发生变化时，PriceChanged事件就会触发。
+public delegate void PriceChangedHandler(decimal oldPrice, decimal newPrice);
+public class Stock
+{
+    string symbol;
+    decimal price;
+
+    public Stock(string symbol) { this.symbol = symbol; }
+
+    public event PriceChangedHandler PriceChanged;
+
+    public decimal Price
+    {
+        get { return price; }
+        set
+        {
+            if (price == value) return;       // Exit if nothing has changed
+            decimal oldPrice = price;
+            price = value;
+            if (PriceChanged != null)             // If invocation list not
+            {
+                PriceChanged(oldPrice, price);      // empty, fire event.
+            }
+        }
+    }
+}
+
+#!csharp
+
+/*
+    本例中，如果将event关键字去掉，PriceChanged就变成了普通的委托字段，虽然运行结果是不变的，但是Stock类就没有原来健壮了。
+    因为这时订阅者可以通过以下方式相互影响：
+        · 通过重新指派PriceChanged替换其他的订阅者（不用+=运算符）。
+        · 清除所有的订阅者（将PriceChanged设置为null）。
+        · 通过调用其委托广播到其他的订阅者。
+    🍦 WinRT的事件具有稍微不同的语义：
+        附加到一个事件时会返回一个令牌以便从事件分离。
+        编译器透明地弥补了这个差异（内部保存了令牌字典），因此可以将WinRT事件当作普通的CLR事件来使用。
+*/
