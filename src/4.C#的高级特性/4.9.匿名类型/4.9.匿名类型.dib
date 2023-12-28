@@ -1,0 +1,81 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.9 匿名类型
+    匿名类型是一个由编译器临时创建来存储一组值的简单类。
+    如果需要创建一个匿名类型，则可以使用new关键字，后面加上对象初始化器，指定该类型包含的属性和值。
+*/
+
+var dude = new { Name = "Bob", Age = 23 };
+
+#!csharp
+
+//编译器将会把上述语句（大致）翻译为：
+internal class AnonymousGeneratedTypeName
+{
+    private string name;  // Actual field name is irrelevant
+    private int age;    // Actual field name is irrelevant
+
+    public AnonymousGeneratedTypeName(string name, int age)
+    {
+        this.name = name; this.age = age;
+    }
+
+    public string Name { get { return name; } }
+    public int Age { get { return age; } }
+
+    // The Equals and GetHashCode methods are overridden (see Chapter 6).
+    // The ToString method is also overridden.
+}
+
+var dude = new AnonymousGeneratedTypeName("Bob", 23);
+
+#!csharp
+
+/*
+    匿名类型只能通过var关键字来引用，因为它并没有一个名字。
+    匿名类型的属性名称可以从一个本身为标识符（或者以标识符结尾）的表达式推断得到
+*/
+
+int Age = 23;
+var dude = new { Name = "Bob", Age, Age.ToString().Length };
+
+#!csharp
+
+//上述代码等价于：
+var dude = new { Name = "Bob", Age = Age, Length = Age.ToString().Length };
+
+#!csharp
+
+//在同一个程序集内声明的两个匿名类型实例，如果它们的元素名称和类型是相同的，那么它们在内部就是相同的类型：
+var a1 = new { X = 2, Y = 4 };
+var a2 = new { X = 2, Y = 4 };
+Console.WriteLine(a1.GetType() == a2.GetType());    // True
+
+//此外，匿名类型重写了Equals方法方法从而能够执行比较运算：
+Console.WriteLine(a1 == a2);           // False
+Console.WriteLine(a1.Equals(a2));     // True
+
+#!csharp
+
+//下面的代码创建了一个匿名类型的数组：
+var dudes = new[]
+{
+    new { Name = "Bob", Age = 30 },
+    new { Name = "Tom", Age = 40 }
+};
+
+#!csharp
+
+//方法无法有效地返回匿名类型的对象，因为将函数返回类型指定为var是非法的。
+var Foo() => new { Name = "Bob", Age = 30 };  // Not legal!
+
+#!csharp
+
+//因而我们只得用object或者dynamic作为返回值，而每一个调用Foo方法的点都需要动态绑定。
+//这种方式会丧失静态类型的安全性（以及Visual Studio的IntelliSense）：
+dynamic Foo() => new { Name = "Bob", Age = 30 };  // No static type safety.
