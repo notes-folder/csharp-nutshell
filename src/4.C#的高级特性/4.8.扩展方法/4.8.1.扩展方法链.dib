@@ -1,0 +1,22 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.8.1 扩展方法链
+    扩展方法和实例方法类似，可以用简单的方式进行链式调用。
+*/
+
+public static class StringHelper
+{
+    public static string Pluralize(this string s) { return s + "s"; }
+    public static string Capitalize(this string s) { return s.ToUpper(); }
+}
+
+//以下程序中的x和y是相同的，两者的最终结果均为"Sausages"。
+//只不过x的计算过程使用了扩展方法，而y则使用了静态方法。
+
+string x = "sausage".Pluralize().Capitalize();
+string y = StringHelper.Capitalize(StringHelper.Pluralize("sausage"));

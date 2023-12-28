@@ -1,0 +1,84 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.8.2 二义性与解析
+*/
+
+#!csharp
+
+/*
+    4.8.2.1 命名空间
+    只有包含扩展方法的类在作用域内时（一般通过导入其所在的命名空间）我们才能够访问扩展方法。
+*/
+
+//例如以下示例中的扩展方法IsCapitalized：
+using System;
+
+namespace Utils
+{
+    public static class StringHelper
+    {
+        public static bool IsCapitalized(this string s)
+        {
+            if (string.IsNullOrEmpty(s)) return false;
+            return char.IsUpper(s[0]);
+        }
+    }
+}
+
+#!csharp
+
+//如果要使用IsCapitalized，那么下面的应用程序必须导入Utils命名空间，否则会出现编译时错误：
+using Utils;
+namespace MyApp
+{
+    class Test
+    {
+        static void Main() => Console.WriteLine("Perth".IsCapitalized());
+    }
+}
+
+#!csharp
+
+/*
+    4.8.2.2 扩展方法与实例方法
+    任何兼容的实例方法的优先级总是高于扩展方法
+*/
+
+//在下面的例子中，即使参数x类型为int也会优先调用Test的Foo方法：
+class Test
+{
+    public void Foo(object x) { }     // This method always wins
+}
+static class Extensions
+{
+    public static void Foo(this Test t, int x) { }
+}
+
+//在这个例子中，只能通过普通的静态调用语法来调用扩展方法：即Extensions.Foo(...)：
+
+#!csharp
+
+/*
+    4.8.2.3 扩展方法与扩展方法
+    如果两个扩展方法签名相同，则扩展方法必须作为一个普通的静态方法调用才能进行区分。
+    当然，如果其中一个扩展方法具有更具体的参数，那么更具体参数的方法优先级更高。
+*/
+
+//例如，考虑以下两个类：
+static class StringHelper
+{
+    public static bool IsCapitalized(this string s) { return char.IsUpper(s[0]); }
+}
+static class ObjectHelper
+{
+    public static bool IsCapitalized(this object s) { return char.IsUpper(s.ToString()[0]); }
+}
+
+//以下代码将调用StringHelper的IsCapitalized方法：
+bool test1 = "Perth".IsCapitalized();
+//需要注意的是，类型和结构体都比接口更加具体。
