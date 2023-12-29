@@ -1,0 +1,19 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.10.4 元组的比较
+    和匿名类型一样，ValueTuple<>类型重写了Equals方法，来恰当地支持元组间的比较：
+*/
+
+var t1 = ("one", 1);
+var t2 = ("one", 1);
+Console.WriteLine(t1.Equals(t2));     // True
+
+/*
+    这也令元组可以成为字典中的键对象。我们将在第6章详细介绍比较，在第7章介绍字典。
+    ValueTuple<>类型实现了IComparable接口（请参见6.12节），因此元组可以用来作为排序的键。
+*/

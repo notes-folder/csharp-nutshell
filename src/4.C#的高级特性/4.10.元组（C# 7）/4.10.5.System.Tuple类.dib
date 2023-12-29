@@ -1,0 +1,20 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.10.5 System.Tuple类
+    在System命名空间下还存在着另一类泛型类型：Tuple（而不是ValueTuple）。
+    Tuple是在.NET Framework 4.0时引入的。
+    Tuple是类，而Value Tuple类型是结构体。
+    将元组定义为类在之后被认定为一种错误：
+    在典型的元组使用场景中，结构体有一些性能优势（避免了不必要的内存分配）且几乎没有任何缺点。
+    因此微软在C# 7中增加了对元组的语言支持，推荐使用新的ValueTuple而忽略之前的Tuple类型。
+    我们还能在C# 7之前的代码中发现Tuple类的影子，但它们没有任何的语言上特殊支持。
+*/
+
+Tuple<string, int> t = Tuple.Create("Bob", 23);  // Factory method
+Console.WriteLine(t.Item1);        // Bob
+Console.WriteLine(t.Item2);        // 23

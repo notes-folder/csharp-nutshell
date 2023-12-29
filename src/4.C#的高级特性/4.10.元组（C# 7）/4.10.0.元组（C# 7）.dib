@@ -1,0 +1,60 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.10 元组（C# 7）
+    和匿名类型一样，元组（tuple）也是存储一组值的便捷方式。
+    元组的主要目的是不使用out参数而从方法中返回多个值（这是匿名类型做不到的）。
+*/
+
+/*
+    🍦 C# 7的元组几乎可以做到匿名类型做到的任何事情，甚至更多。
+    而它的缺点之一是命名元素的运行时类型擦除，我们接下来会进行介绍。
+    创建元组字面量的最简单方式是在括号中列出期望的值。
+    这样就可以创建一个包含匿名元素的元组，并使用Item1、Item2等等访问其中的元素。
+*/
+
+var bob = ("Bob", 23);    // Allow compiler to infer the element types
+
+Console.WriteLine(bob.Item1);    // Bob
+Console.WriteLine(bob.Item2);    // 23
+
+#!csharp
+
+/*
+    🍦 C# 7的元组功能需要System.ValueTuple<...> 泛型结构体的支持。
+    它们并非.NET Framework 4.6的一部分，而是定义在System. ValueTuple程序集中。
+    可以通过同名的Nuget包获得该程序集。
+    如果你使用Visual Studio进行.NET 4.6的开发，那么首先需要下载这个包（如果使用LINQPad则不需要这个步骤，因为该程序集已经自动包含在其中了）。
+    在.NET Framework 4.7中，System.ValueTuple已经包含在mscorlib.dll中了。
+*/
+
+// 元组是值类型，并且它是可变（可读可写）的元素：
+var joe = bob;                    // joe is a *copy* of bob
+joe.Item1 = "Joe";                // Change joe's Item1 from Bob to Joe
+Console.WriteLine(bob);          // (Bob, 23)
+Console.WriteLine(joe);          // (Joe, 23)
+
+#!csharp
+
+// 和匿名类型不同，我们可以将每一个元素的类型列在括号中，来显式指定元组的类型。
+(string, int) bob = ("Bob", 23);   // var is not compulsory with tuples!
+
+#!csharp
+
+// 这意味着我们可以有效地从方法中返回元组：
+(string, int) GetPerson() => ("Bob", 23);
+
+(string, int) person = GetPerson();   // Could use 'var' here if we want
+Console.WriteLine(person.Item1);     // Bob
+Console.WriteLine(person.Item2);     // 23
+
+#!csharp
+
+// 元组和泛型配合默契，因此以下的类型都是合法的：
+Task<(string, int)> task = Task.Run(() => ("test", 5));
+Dictionary<(string, int), Uri> dict = new Dictionary<(string, int), Uri>();
+IEnumerable<(int ID, string Name)> values;     // See below for naming elements

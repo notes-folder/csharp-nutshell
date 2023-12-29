@@ -1,0 +1,46 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.10.3 元组的解构
+    元组隐式支持解构模式（请参见1.8.16节），因此可以将一个元组解构为独立的变量。
+*/
+
+// 以下代码：
+var bob = ("Bob", 23);
+
+string name = bob.Item1;
+int age = bob.Item2;
+
+#!csharp
+
+// 可以写为：
+var bob = ("Bob", 23);
+
+(string name, int age) = bob;   // Deconstruct the bob tuple into
+                                // separate variables (name and age).
+Console.WriteLine(name);
+Console.WriteLine(age);
+
+#!csharp
+
+/*
+    解构元组的语法和声明一个含有命名元素的元组的语法有很多相似之处。
+*/
+
+//下面的例子指出了它们的区别：
+(string name, int age) = bob;    // Deconstructing a tuple
+(string name, int age) bob2 = bob;     // Declaring a new tuple
+
+#!csharp
+
+// 以下是另一个例子，其中包含了方法调用和类型推断（var）：
+(string, int, char) GetBob() => ("Bob", 23, 'M');
+
+var (name, age, sex) = GetBob();
+Console.WriteLine(name);          // Bob
+Console.WriteLine(age);           // 23
+Console.WriteLine(sex);           // M

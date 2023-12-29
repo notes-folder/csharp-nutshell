@@ -1,0 +1,15 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.10.2 ValueTuple.Create
+    除前面提到的方法外还可以在非泛型的ValueTuple类型上调用工厂方法来创建元组：
+*/
+
+ValueTuple<string, int> bob1 = ValueTuple.Create("Bob", 23);
+(string, int) bob2 = ValueTuple.Create("Bob", 23);
+Console.WriteLine(bob1);
+Console.WriteLine(bob2);
