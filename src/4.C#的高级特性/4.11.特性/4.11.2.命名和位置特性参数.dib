@@ -1,0 +1,31 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.11.2 命名和位置特性参数特性可以包含参数。
+    在下面的例子中，我们将XmlElementAttribute添加到一个类上。
+    这个特性告诉XML序列化器（在System.Xml.Serialization命名空间内）一个对象如何转化为XML格式以及如何接受特性参数。
+    下面的特性将CustomerEntity类映射到一个名为Customer的XML元素上，且这个XML元素位于http://oreilly.com命名空间。
+*/
+
+using System.Xml.Serialization;
+
+[XmlRoot("Customer", Namespace = "http://oreilly.com")]
+public class CustomerEntity { }
+
+#!csharp
+
+/*
+    特性参数分为两类：位置参数和命名参数。
+    在前一个例子中，第一个参数是位置参数，第二个参数是命名参数。
+    位置参数对应于特性类型的公有构造器的参数；
+    命名参数则对应于该特性类型的公有字段或者公有属性。
+*/
+
+/*
+    当指定一个特性时，必须包含对应特性构造器中的位置参数，而命名参数则是可选的。
+    在第19章中，我们将详细介绍如何指定有效的参数类型及其求值规则。
+*/

@@ -1,0 +1,31 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.11.4 指定多个特性
+    一个代码元素可以指定多个特性。
+    特性可以列在同一对方括号中（用逗号分隔），或者分隔在多对方括号中，当然也可以是两种形式的结合。
+*/
+
+// 下面的三个例子在语义上是相同的：
+
+#!csharp
+
+[Serializable, Obsolete, CLSCompliant(false)]
+public class Bar { }
+
+#!csharp
+
+[Serializable]
+[Obsolete]
+[CLSCompliant(false)]
+public class Bar { }
+
+#!csharp
+
+[Serializable, Obsolete]
+[CLSCompliant(false)]
+public class Bar { }

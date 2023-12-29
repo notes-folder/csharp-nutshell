@@ -1,0 +1,34 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.11.1 特性类
+    特性是通过直接或者间接继承抽象类System.Attribute的方式定义的。
+    如果要将一个特性附加到一个代码元素中，那么就需要在该代码元素之前用方括号指定特性的类型名称。
+*/
+
+// 例如：以下的例子将ObsoleteAttribute附加到Foo类上：
+
+[ObsoleteAttribute]
+public class Foo { }
+
+#!csharp
+
+/*
+    编译器可以识别该特性，并在编译时对引用该特性标记的类型或成员的行为产生警告。
+    按照惯例，所有特性类型都以Attribute结尾。
+    C#能够识别这个后缀并允许在为成员附加特性时忽略该后缀：
+*/
+
+[Obsolete]
+public class Foo { }
+
+#!csharp
+
+// ObsoleteAttribute是在System命名空间中声明的一种类型，如下所示（为了简明起见省略部分代码）：
+public sealed class ObsoleteAttribute : Attribute { }
+
+// C#语言和.NET Framework包含了大量的预定义特性，我们将在第19章介绍如何定义特性。

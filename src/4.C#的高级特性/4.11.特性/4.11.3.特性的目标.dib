@@ -1,0 +1,14 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.11.3 特性的目标
+    在不显式指定的情况下，特性的目标就是它后面紧跟的代码元素，并且一般是类型或者类型的成员。
+    然而，也可以将特性附加在程序集上。这就要求显式指定特性的目标了。
+*/
+
+// 下面的例子使用CLSCompliant特性来标记整个程序集的CLS兼容性：
+[assembly: CLSCompliant(true)]
