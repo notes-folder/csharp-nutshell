@@ -1,0 +1,92 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.12 调用者信息特性
+    从C# 5开始，可以在可选参数上添加三种调用者信息中的一种，它们可以让编译器从调用者源代码获取参数的默认值：
+        · [CallerMemberName]：表示调用者的成员名称
+        · [CallerFilePath]：表示调用者的源代码文件的路径
+        · [CallerLineNumber]：表示调用者源代码文件的行号
+*/
+
+// 下面代码中的Foo方法演示了这三个特性：
+using System.Runtime.CompilerServices;
+
+Foo();
+
+void Foo(
+  [CallerMemberName] string memberName = null,
+  [CallerFilePath] string filePath = null,
+  [CallerLineNumber] int lineNumber = 0)
+{
+    Console.WriteLine(memberName);
+    Console.WriteLine(filePath);
+    Console.WriteLine(lineNumber);
+}
+
+#!csharp
+
+// 假设我们的程序位于c:\source\test\Program.cs。则输出结果是：
+// Main
+// c:\source\test\Program.cs
+// 6
+
+#!csharp
+
+// 和标准的可选参数一样，替代操作在调用位置完成。因此，Main方法中的调用实际上是以下程序的语法糖：
+Foo("Main", @"c:\source\test\Program.cs", 6);
+
+#!csharp
+
+/*
+    调用者信息特性很适合于记录日志，也适合于实现一些模式，例如在对象的某个属性变化时触发一个变化通知事件。
+    事实上，.NET Framework有一个专门实现这个效果的标准接口INotifyPropertyChanged（位于System.ComponentModel命名空间）：
+*/
+
+public interface INotifyPropertyChanged
+{
+    event PropertyChangedEventHandler PropertyChanged;
+}
+
+public delegate void PropertyChangedEventHandler
+  (object sender, PropertyChangedEventArgs e);
+
+public class PropertyChangedEventArgs : EventArgs
+{
+    public PropertyChangedEventArgs(string propertyName) { }
+    public virtual string PropertyName { get; }
+}
+
+#!csharp
+
+/*
+    注意PropertyChangedEventArgs需要接收发生变化的属性名称。
+    然而，通过使用[CallerMemberName]特性，我们就可以实现这个接口，并在不指定属性名称的情况下调用这个事件：
+*/
+
+public class Foo : INotifyPropertyChanged
+{
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+    void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    string customerName;
+    public string CustomerName
+    {
+        get { return customerName; }
+        set
+        {
+            if (value == customerName) return;
+            customerName = value;
+            RaisePropertyChanged();
+            // The compiler converts the above line to:
+            // RaisePropertyChanged ("CustomerName");
+        }
+    }
+}
