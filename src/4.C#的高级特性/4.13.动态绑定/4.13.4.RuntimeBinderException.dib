@@ -1,0 +1,15 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.13.4 RuntimeBinderException
+    如果成员绑定失败，那么程序会抛出RuntimeBinderException异常，可以将其看做一个运行时的编译时错误：
+*/
+
+dynamic d = 5;
+d.Hello();                     // throws RuntimeBinderException
+
+// 上述代码抛出异常的原因是int类型没有Hello方法。

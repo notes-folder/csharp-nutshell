@@ -1,0 +1,23 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.13.6 动态转换
+    动态类型可以隐式从其他类型转换或转换为其他类型：
+*/
+
+int i = 7;
+dynamic d = i;
+long j = d;          // No cast required (implicit conversion)
+
+// 只有在动态对象的运行时类型能够隐式转换到目标静态类型时上述转换才能成功，例子中的转换之所以能够成功是因为int类型可以隐式转换为long类型。
+
+#!csharp
+
+// 下面的例子将会抛出RuntimeBinderException异常，因为int类型不能够隐式转换为short类型：
+int i = 7;
+dynamic d = i;
+short j = d;       // throws RuntimeBinderException

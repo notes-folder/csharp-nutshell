@@ -1,0 +1,37 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.13.8 动态表达式
+    字段、属性、方法、事件、构造器、索引器、运算符和转换都可以动态调用。
+    若动态表达式的返回值为void，那么和静态类型的表达式一样，该结果是不能使用的。
+*/
+
+// 两者的区别是动态表达式的错误发生在运行时：
+dynamic list = new List<int>();
+var result = list.Add(5);           // RuntimeBinderException thrown
+
+#!csharp
+
+// 包含动态操作数的表达式一般来说也是动态的，这是缺少类型信息的结果向下传递造成的：
+dynamic x = 2;
+var y = x * 3;        // Static type of y is dynamic
+
+#!csharp
+
+// 这个规则有一些例外情况。
+// 首先，将动态表达式转换为静态类型会产生一个静态表达式：
+dynamic x = 2;
+var y = (int)x;       // Static type of y is int
+
+#!csharp
+
+// 其次，构造器的调用总是产生静态表达式，即使调用时使用的是动态参数。
+// 以下的例子中，x会被静态地设置为StringBuilder类型：
+dynamic capacity = 10;
+var x = new System.Text.StringBuilder(capacity);
+
+// 此外，在极少数情况下，包含动态参数的表达式也是静态的，这些情况包括将索引传递给数组以及创建委托的表达式。

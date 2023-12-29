@@ -1,0 +1,30 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.13.2 自定义绑定
+    自定义绑定是通过动态对象实现IDynamicMetaObjectProvider（IDMOP）接口来实现的。
+    虽然可以在C#编写的类型上实现IDMOP（这种方式也很有效），
+    但是更常见情况是从一种在.NET的DLR上实现的动态语言中（例如IronPython或者IronRuby）获得一个IDMOP对象。
+    这些语言的对象已经隐式实现了IDMOP，通过这种方式可以直接定义操作的含义。
+*/
+
+// 我们将在第20章详细介绍自定义绑定器。现在则先写一个简单的绑定器来展示其功能：
+public class Duck : DynamicObject
+{
+    public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+    {
+        Console.WriteLine(binder.Name + " method was called");
+        result = null;
+        return true;
+    }
+}
+
+dynamic d = new Duck();
+d.Quack();                     // Quack method was called
+d.Waddle();                    // Waddle method was called
+
+// Duck类实际上并没有Quack方法。相反，它使用自定义绑定拦截并解释所有方法的调用。

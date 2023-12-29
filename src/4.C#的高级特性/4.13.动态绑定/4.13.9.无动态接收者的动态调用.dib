@@ -1,0 +1,54 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.13.9 无动态接收者的动态调用
+    dynamic的使用通常涉及动态接收者。
+*/
+
+// 即，动态对象是动态函数调用的接收者：
+// dynamic x = ...;
+// x.Foo();            // x is the receiver
+
+#!csharp
+
+/*
+    然而，还可以使用动态参数调用已知的静态函数。
+    这种调用遵循动态重载解析规则，包括调用：
+        · 静态方法· 实例构造器
+        · 已知静态类型的接收者的实例方法
+*/
+
+// 下面的例子中，Foo被动态绑定，且依赖于动态参数的运行时类型：
+public partial class Program
+{
+    public static void Foo(int x) { Console.WriteLine("1"); }
+    public static void Foo(string x) { Console.WriteLine("2"); }
+}
+
+dynamic x = 5;
+dynamic y = "watermelon";
+Program.Foo(x);                   // 1
+Program.Foo(y);                   // 2
+
+#!csharp
+
+/*
+    本例中并没有动态接收者，因此编译器可以静态进行基本的检查以确定动态调用是否能够成功。
+    它会检查是否存在名称和参数数量匹配的函数。
+    如果没有发现候选函数，则产生一个编译时错误。
+*/
+
+// 例如：
+public partial class Program
+{
+    public static void Foo(int x) { Console.WriteLine("1"); }
+    public static void Foo(string x) { Console.WriteLine("2"); }
+}
+
+dynamic x = 5;
+Program.Foo(x, x);            // Compiler error - wrong number of parameters
+Program.Fook(x);              // Compiler error - no such method name

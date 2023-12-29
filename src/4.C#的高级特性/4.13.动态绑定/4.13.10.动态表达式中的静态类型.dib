@@ -1,0 +1,32 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.13.10 动态表达式中的静态类型
+    在动态绑定中使用动态类型是天经地义的，但是静态类型在可能的情况下也可用在动态绑定中。
+*/
+
+// 例如：
+public partial class Program
+{
+    public static void Foo(object x, object y) { Console.WriteLine("oo"); }
+    public static void Foo(object x, string y) { Console.WriteLine("os"); }
+    public static void Foo(string x, object y) { Console.WriteLine("so"); }
+    public static void Foo(string x, string y) { Console.WriteLine("ss"); }
+}
+
+object o = "hello";
+dynamic d = "goodbye";
+Program.Foo(o, d);                  // os
+
+#!csharp
+
+/*
+    Foo(o, d)的调用是动态绑定的，这是因为它其中的一个参数d的类型是dynamic。
+    但是，由于o的类型是静态已知的，所以即使这个绑定是动态发生的，也会使用这个静态参数。
+    本例中，重载解析器之所以选择Foo的第二个实现，是o的静态类型和d的运行时类型共同决定的。
+    换句话说，编译器会尽其所能地静态化。
+*/

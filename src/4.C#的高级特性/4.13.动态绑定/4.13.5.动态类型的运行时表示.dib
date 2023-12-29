@@ -1,0 +1,63 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.13.5 动态类型的运行时表示
+    dynamic和object类型之间有深度的等价关系。
+*/
+
+// 在运行时，以下的表达式的结果为true：
+Console.WriteLine(typeof(dynamic) == typeof(object));
+
+#!csharp
+
+// 上述规则还可以扩展到构造类型和数组类型：
+Console.WriteLine(typeof(List<dynamic>) == typeof(List<object>));
+Console.WriteLine(typeof(dynamic[]) == typeof(object[]));
+
+#!csharp
+
+// 与对象引用相似，动态引用也可以指向除指针类型以外的任何类型的对象：
+dynamic x = "hello";
+Console.WriteLine(x.GetType().Name);  // String
+
+x = 123;  // No error (despite same variable)
+Console.WriteLine(x.GetType().Name);  // Int32
+
+#!csharp
+
+/*
+    在结构上，object引用和动态引用没有任何区别。
+    动态引用可以直接在它所指向的对象上执行动态操作。
+    可以将object对象转换为dynamic，以便对object对象执行任意的动态操作：
+*/
+
+object o = new System.Text.StringBuilder();
+dynamic d = o;
+d.Append("hello");
+Console.WriteLine(o);    // hello
+
+#!csharp
+
+/*
+    🍦 若在一个提供了公开的dynamic成员的类型上使用反射，就可以观察到这些成员就是标记了特性的object。
+*/
+
+public class Test
+{
+    public dynamic Foo;
+}
+
+#!csharp
+
+// 等价的。
+public class Test
+{
+    [System.Runtime.CompilerServices.DynamicAttribute]
+    public object Foo;
+}
+
+// 这令该类型的消费者知道Foo属性应该作为动态类型使用，而同时也可以在不支持动态绑定的语言上回退到object类型。

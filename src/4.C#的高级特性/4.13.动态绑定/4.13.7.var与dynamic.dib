@@ -1,0 +1,23 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    var和dynamic类型表面上相似，但实际上是非常不同的：
+        · var说：“让编译器去确定我的类型吧”
+        · dynamic说：“让运行时去确定我的类型吧”
+*/
+
+dynamic x = "hello";   // Static type is dynamic, runtime type is string
+var y = "hello";       // Static type is string, runtime type is string
+int i = x;             // Runtime error      (cannot convert string to int)
+int j = y;             // Compile-time error (cannot convert string to int)
+
+#!csharp
+
+// 一个由var声明的变量的静态类型可以是dynamic：
+dynamic x = "hello";
+var y = x;              // Static type of y is dynamic
+int z = y;              // Runtime error (cannot convert string to int)
