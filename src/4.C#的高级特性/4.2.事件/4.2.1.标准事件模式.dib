@@ -77,7 +77,7 @@ public class Stock
 // if (temp ! = null) temp (this, e);
 
 // 我们可以使用C# 6的null条件运算符来避免临时变量的声明：
-// PriceChanged? .Invoke (this, e);
+// PriceChanged?.Invoke(this, e);
 
 // 这种方式既线程安全又书写简明，是现阶段最好的事件触发方式了。
 

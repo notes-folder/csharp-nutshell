@@ -1,0 +1,20 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.14.2 重载等号和比较运算符
+    通常在我们使用结构体（或类，但不常见）时需要重载等号和比较运算符。
+    重载等号和比较运算符有一些特殊的规则和要求，我们将在第6章详细介绍。
+    在这里我们将其总结为：
+        · 成对重载：
+            C#编译器要求逻辑上成对的运算符必须同时定义。
+            这些运算符包括（==、! =）、（<、> ）和（<=、> =）。
+        · Equals和GetHashCode：
+            在大多数情况下，如果重载了（==）和（! =）运算符，则通常也需要重载object中定义的Equals和GetHashCode方法。
+            使之具有合理的行为。如果没有按照要求重载，则C#编译器会发出警告（我们将在6.11节详细介绍）。
+        · IComparable和IComparable<T>：
+            如果重载了（<、> ）和（<=、> =）运算符，那么还应当实现IComparable和IComparable<T>接口。
+*/

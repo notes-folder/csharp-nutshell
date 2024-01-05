@@ -1,0 +1,50 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.14.3 自定义隐式和显式转换
+    隐式和显式转换也是可重载的运算符。
+    这些转换经过重载后，一般能使强相关的类型（例如数字）之间的转换变得更加简明自然。
+    如果要在弱相关的类型之间进行转换，则更适合采用以下方式：
+        · 编写一个以转换类型为参数的构造器
+        · 编写（静态的）ToXXX和FromXXX方法进行类型转换。
+    之前我们在介绍类型时提到，隐式转换意味着它能够保证转换一定成功，且转换时不会丢失信息。
+    相反，若转换成功与否取决于运行时环境，或转换过程中可能丢失信息，则应当使用显式转换。
+*/
+
+// 在以下例子中，我们定义了Note类型和double（代表以赫兹为单位的音符频率）之间的转换规则：
+public struct Note
+{
+    public double value;
+    public Note(double semitonesFromA) { value = semitonesFromA; }
+    public static Note operator +(Note x, double semitones)
+    {
+        return new Note(x.value + semitones);
+    }
+
+    // Convert to hertz
+    public static implicit operator double(Note x)
+    => 440 * Math.Pow(2, (double)x.value / 12);
+
+    // Convert from hertz (accurate to the nearest semitone)
+    public static explicit operator Note(double x)
+    => new Note((int)(0.5 + 12 * (Math.Log(x / 440) / Math.Log(2))));
+}
+
+
+Note n = (Note)554.37;  // explicit conversion
+double x = n;             // implicit conversion
+Console.WriteLine(x);     // 554.365261953744
+
+#!csharp
+
+/*
+    🍦 按照之前的规则，上例中实现ToFrequency（与静态的FromFrequency）方法相比隐式和显式运算符重载可能是更好的选择
+*/
+
+// 🍦 as和is运算符会忽略自定义转换：
+Console.WriteLine(554.37 is Note);    // False
+Note n = 554.37 as Note;                // Error

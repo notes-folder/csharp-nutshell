@@ -1,0 +1,46 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!csharp
+
+/*
+    4.14.1 运算符函数
+    运算符是通过声明运算符函数进行重载的。
+    运算符函数具有以下规则：
+        · 函数名为operator关键字跟上运算符符号。
+        · 运算符函数必须是static和public的。
+        · 运算符函数的参数即操作数。
+        · 运算符函数的返回类型表示表达式的结果。
+        · 运算符函数的操作数中至少有一个类型和声明运算符函数的类型是一致的。
+*/
+
+// 在以下例子中，我们用名为Note的结构体表示音符，并重载其+运算符：
+public struct Note
+{
+    public int value;
+    public Note(int semitonesFromA) { value = semitonesFromA; }
+    public static Note operator +(Note x, int semitones)
+    {
+        return new Note(x.value + semitones);
+    }
+}
+
+// 这个重载令Note可以和int相加：
+Note B = new Note(2);
+Note CSharp = B + 2;
+Console.WriteLine(CSharp.value); // 4
+
+// 重载运算符会自动支持相应的复合赋值运算符。在上例中，因为我们重载了+号，所以自然就可以使用+=了。
+CSharp += 2;
+Console.WriteLine(CSharp.value); // 6
+
+#!csharp
+
+// 和方法与属性一样，C# 6可以将只含有一个表达式的运算符函数简洁地写成表达式体语法的形式
+public struct Note
+{
+    public int value;
+    public Note(int semitonesFromA) { value = semitonesFromA; }
+    public static Note operator + (Note x, int semitones) => new Note(x.value + semitones);
+}
